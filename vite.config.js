@@ -19,7 +19,7 @@ export default defineConfig({
 
   // The plugins array tells Vite which plugins to use.
   plugins: [
-
+ 
     // Enable React support.
     react(),
 
@@ -27,4 +27,5 @@ export default defineConfig({
     tailwindcss(),
 
   ],
+  base: '/NilNovaz-Website/',
 });
