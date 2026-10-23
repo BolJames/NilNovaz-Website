@@ -11,7 +11,7 @@ import { FaArrowRight, FaPlayCircle } from "react-icons/fa";
 // FaArrowRight -> arrow icon for the "Getting Started" button.
 // FaPlayCircle -> play icon for the "Watch Demo" button.
 
-import heroImage from "../assets/office.png";
+import heroImage from "../assets/Office.png";
 // Imports the Hero image from the assets folder.
 // Vite will process this image and provide its correct URL.
 
@@ -508,7 +508,7 @@ const Hero = () => {
 
             <motion.img
               src={heroImage}
-              // Uses the office.png image imported at the top.
+              // Uses the Office.png image imported at the top.
 
               alt="NilNovaz Technologies Team"
               // Alternative text for accessibility and SEO.
@@ -608,4 +608,3 @@ const Hero = () => {
 export default Hero;
 // Makes the Hero component available to other files,
 // such as Home.jsx.
-
