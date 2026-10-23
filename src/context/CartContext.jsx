@@ -6,9 +6,99 @@ import {
   useState,
 } from "react";
 
+const CartContext = createContext(null);
 const B2BCartContext = createContext(null);
 
+const CART_STORAGE_KEY = "nilnovaz-cart";
 const STORAGE_KEY = "nilnovaz-b2b-cart";
+
+const readCustomerCart = () => {
+  try {
+    const saved = localStorage.getItem(CART_STORAGE_KEY);
+    if (!saved) return [];
+
+    const parsed = JSON.parse(saved);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
+export function CartProvider({ children }) {
+  const [items, setItems] = useState(() => readCustomerCart());
+
+  useEffect(() => {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  }, [items]);
+
+  const addItem = (product, quantity = 1) => {
+    if (!product) return;
+
+    const quantityToAdd = Math.max(1, Number(quantity) || 1);
+    setItems((currentItems) => {
+      const existingItem = currentItems.find((item) => item.id === product.id);
+
+      if (existingItem) {
+        return currentItems.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + quantityToAdd }
+            : item
+        );
+      }
+
+      return [...currentItems, { ...product, quantity: quantityToAdd }];
+    });
+  };
+
+  const updateQuantity = (productId, quantity) => {
+    setItems((currentItems) =>
+      currentItems.map((item) =>
+        item.id === productId
+          ? { ...item, quantity: Math.max(1, Number(quantity) || 1) }
+          : item
+      )
+    );
+  };
+
+  const removeItem = (productId) => {
+    setItems((currentItems) =>
+      currentItems.filter((item) => item.id !== productId)
+    );
+  };
+
+  const clearCart = () => setItems([]);
+  const subtotal = items.reduce(
+    (sum, item) => sum + Number(item.price) * item.quantity,
+    0
+  );
+  const tax = subtotal * 0.05;
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+
+  const value = {
+    items,
+    addItem,
+    updateQuantity,
+    removeItem,
+    clearCart,
+    itemCount,
+    subtotal,
+    tax,
+    total: subtotal + tax,
+    isEmpty: items.length === 0,
+  };
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+}
+
+export function useCart() {
+  const context = useContext(CartContext);
+
+  if (!context) {
+    throw new Error("useCart must be used inside CartProvider");
+  }
+
+  return context;
+}
 
 const readCart = () => {
   try {
